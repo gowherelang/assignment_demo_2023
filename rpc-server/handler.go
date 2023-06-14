@@ -2,30 +2,164 @@ package main
 
 import (
 	"context"
-	"math/rand"
-
+	"fmt"
 	"github.com/TikTokTechImmersion/assignment_demo_2023/rpc-server/kitex_gen/rpc"
+	"math/rand"
+	"strings"
+	"time"
 )
 
 // IMServiceImpl implements the last service interface defined in the IDL.
 type IMServiceImpl struct{}
 
 func (s *IMServiceImpl) Send(ctx context.Context, req *rpc.SendRequest) (*rpc.SendResponse, error) {
+
+	if err := validateSendRequest(req); err != nil {
+		return nil, err
+	}
+
+	timestamp := time.Now().Unix()
+	message := &Message{
+		Message:   req.Message.GetText(),
+		Sender:    req.Message.GetSender(),
+		Timestamp: timestamp,
+	}
+
+	roomID, err := getRoomID(req.Message.GetChat())
+	if err != nil {
+		return nil, err
+	}
+
+	err = redisClient.SaveMessage(ctx, roomID, message)
+	if err != nil {
+		return nil, err
+	}
+
 	resp := rpc.NewSendResponse()
-	resp.Code, resp.Msg = areYouLucky()
+	resp.Code, resp.Msg = 0, "success"
+
 	return resp, nil
 }
 
 func (s *IMServiceImpl) Pull(ctx context.Context, req *rpc.PullRequest) (*rpc.PullResponse, error) {
+
+	roomID, err := getRoomID(req.GetChat())
+	if err != nil {
+		return nil, err
+	}
+
+	limit := int64(req.GetLimit())
+	start := req.GetCursor()
+	end := start + limit
+
+	messages, err := redisClient.GetMessagesByRoomID(ctx, roomID, start, end, req.GetReverse())
+	if err != nil {
+		return nil, err
+	}
+
+	responseMsgs := make([]*rpc.Message, 0)
+	var counter int32 = 0
+	var nextCursor int64 = 0
+	hasMore := false
+
+	for _, msg := range messages {
+
+		if counter+1 > req.GetLimit() {
+			hasMore = true
+			nextCursor = end
+			break
+		}
+
+		temp := &rpc.Message{
+			Chat:     req.GetChat(),
+			Text:     msg.Message,
+			Sender:   msg.Sender,
+			SendTime: msg.Timestamp,
+		}
+
+		responseMsgs = append(responseMsgs, temp)
+		counter += 1
+	}
+
 	resp := rpc.NewPullResponse()
-	resp.Code, resp.Msg = areYouLucky()
+	resp.Messages = responseMsgs
+	resp.Code = 0
+	resp.Msg = "success"
+	resp.HasMore = &hasMore
+	resp.NextCursor = &nextCursor
+
 	return resp, nil
 }
 
 func areYouLucky() (int32, string) {
 	if rand.Int31n(2) == 1 {
-		return 0, "success"
+		return 0, "success" //when no error, 200 OK = success
 	} else {
-		return 500, "oops"
+		return 500, "oops" //when error, 500 Internal Server Error
 	}
 }
+
+func getRoomID(chat string) (string, error) {
+
+	var roomID string
+
+	chatLower := strings.ToLower(chat)
+	users := strings.Split(chatLower, ":")
+
+	if len(users) != 2 {
+		err := fmt.Errorf("invalid Chat ID '%s', should be in the format of user1:user2", chat)
+		return "", err
+	}
+
+	user1, user2 := users[0], users[1]
+
+	if comp := strings.Compare(user1, user2); comp == 1 {
+		roomID = fmt.Sprintf("%s:%s", user2, user1)
+	} else {
+		roomID = fmt.Sprintf("%s:%s", user1, user2)
+	}
+
+	return roomID, nil
+}
+
+func validateSendRequest(req *rpc.SendRequest) error {
+
+	users := strings.Split(req.Message.Chat, ":")
+
+	if len(users) != 2 {
+		err := fmt.Errorf("invalid Chat ID '%s', should be in the format of user1:user2", req.Message.GetChat())
+		return err
+	}
+
+	user1, user2 := users[0], users[1]
+	sender := req.Message.GetSender()
+
+	if user1 != sender && user2 != sender {
+		err := fmt.Errorf("sender '%s' not here", sender)
+		return err
+	}
+
+	return nil
+}
+
+/*
+POSTMAN POST
+
+curl --location 'localhost:8080/api/send' \
+--header 'Content-Type: application/json' \
+--data '{
+    "chat": "alpha:beta",
+    "text": "hello beta, from alpha",
+    "sender": "alpha"
+}'
+
+POSTMAN GET
+
+curl --location --request GET 'localhost:8080/api/pull' \
+--header 'Content-Type: application/json' \
+--data '{
+"chat": "alpha:beta",
+"limit": 20
+}'
+
+*/
