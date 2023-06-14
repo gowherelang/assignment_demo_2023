@@ -43,7 +43,7 @@ curl --location 'localhost:8080/api/send' \
     "sender": "alpha"
 }'
 ```
-![POST image for Postman](postman/postman POST.png)
+![POST image for Postman](https://github.com/gowherelang/assignment_demo_2023/blob/ffc2076b581aea175992bfe10e4d16f34bf03ef5/postman/postman%20POST.png)
 
 ### GET
 ```bash
@@ -54,4 +54,4 @@ curl --location --request GET 'localhost:8080/api/pull' \
 "limit": 20
 }'
 ```
-![GET image for Postman](postman/postman GET.png)
+![GET image for Postman](https://raw.githubusercontent.com/gowherelang/assignment_demo_2023/ffc2076b581aea175992bfe10e4d16f34bf03ef5/postman/postman%20GET.png)
