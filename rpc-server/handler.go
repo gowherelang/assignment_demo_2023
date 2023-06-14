@@ -159,7 +159,9 @@ curl --location --request GET 'localhost:8080/api/pull' \
 --header 'Content-Type: application/json' \
 --data '{
 "chat": "alpha:beta",
-"limit": 20
+"cursor": 0,
+"limit": 20,
+"reverse": true
 }'
 
 */
