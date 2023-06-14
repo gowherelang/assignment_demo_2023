@@ -43,6 +43,7 @@ curl --location 'localhost:8080/api/send' \
     "sender": "alpha"
 }'
 ```
+
 ### GET
 ```bash
 curl --location --request GET 'localhost:8080/api/pull' \
