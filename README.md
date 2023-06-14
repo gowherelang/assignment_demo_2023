@@ -45,7 +45,7 @@ curl --location 'localhost:8080/api/send' \
 ### GET messages between 2 users
 "limit" = maximum number of messages to pull
 <br>"cursor" = index which you want to start to pull
-e.g. msg list = [1, 2, 3, 4, 5], cursor = 2, limit = 2, results in [2, 3] 
+e.g. msg list = [1, 2, 3, 4, 5], cursor = 2, limit = 2, results in [3, 4] 
 ```bash
 curl --location --request GET 'localhost:8080/api/pull' \
 --header 'Content-Type: application/json' \
