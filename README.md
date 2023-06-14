@@ -43,8 +43,7 @@ curl --location 'localhost:8080/api/send' \
     "sender": "alpha"
 }'
 ```
-![POST image for Postman](https://github.com/gowherelang/assignment_demo_2023/blob/ffc2076b581aea175992bfe10e4d16f34bf03ef5/postman/postman%20POST.png)
-
+![POST image for Postman](<img src="https://raw.githubusercontent.com/gowherelang/assignment_demo_2023/main/postman/postman%20POST.png" height=150%)
 ### GET
 ```bash
 curl --location --request GET 'localhost:8080/api/pull' \
