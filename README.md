@@ -13,13 +13,12 @@ Tech used:
 - TikTok's Kitex framework for RPC-server
 - Thrift as Interface Definition Language (IDL) to define structs and services
 - Docker for containerization
-- Redis for database
+- Redis for database, key-value
 - Postman API for testing backend using CURL
 
-System design:
-image
-
-## Run
+System design from assignment:
+![system design image for Postman](https://raw.githubusercontent.com/gowherelang/assignment_demo_2023/main/postman/systemdesign.png)
+## Run docker
 
 ```bash
 docker-compose up -d
