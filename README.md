@@ -2,8 +2,8 @@
 
 ![Tests](https://github.com/TikTokTechImmersion/assignment_demo_2023/actions/workflows/test.yml/badge.svg)
 
-This is the backend assignment for 2023 TikTok Tech Immersion.
-<br>It is a simulation of an Instant Messaging System, to design and implement the backend. 
+This is the backend assignment for [TikTok Tech Immersion Programme 2023](https://bytedance.sg.feishu.cn/docx/CEusdOSGHody93xCekHlbBOvgGR), to design and implement the backend system of an Instant Messaging System.
+Only the backend is developed for this assignment, frontend is not required (viewed from Postman).
 
 ## Installation
 
