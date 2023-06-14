@@ -34,7 +34,7 @@ curl localhost:8080/ping
 
 ## Postman screenshots
 ### POST
-```bash
+```bash 
 curl --location 'localhost:8080/api/send' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -43,6 +43,7 @@ curl --location 'localhost:8080/api/send' \
     "sender": "alpha"
 }'
 ```
+![POST image for Postman](postman/postman POST.png)
 
 ### GET
 ```bash
@@ -53,3 +54,4 @@ curl --location --request GET 'localhost:8080/api/pull' \
 "limit": 20
 }'
 ```
+![GET image for Postman](postman/postman GET.png)
